@@ -1,20 +1,11 @@
-# Firefox Proxy Browser
+# Proxy/server layout
 
-A dark, Firefox-inspired browser shell with a Yuki/Interstellar-style home page, Simple Icons loaded from jsDelivr, and a settings panel for selecting a proxy and transport.
+- `public/worker.js`: service worker for same-origin shell caching. It intentionally does not intercept arbitrary third-party pages.
+- `server/proxies/ultraviolet`: Ultraviolet adapter boundary.
+- `server/proxies/scramjet`: Scramjet adapter boundary.
+- `server/transports/libcurl`: libcurl transport boundary.
+- `server/transports/wisp`: Wisp transport boundary.
+- `server/transports/epoxy-tls`: Epoxy TLS transport boundary.
+- `server/servers/wisp`: websocket server endpoint at `/wisp`.
 
-## Run locally
-
-```bash
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`.
-
-## Proxy behavior
-
-Entering a URL sends it through the local `/api/proxy?url=...` endpoint. The address bar shows the local proxied URL while the `x-proxied-url` response header retains the original destination. HTML links and redirects are rewritten to stay inside the proxy endpoint.
-
-The backend exposes the selected proxy and transport as request metadata. The MercuryWorkshop and Ultraviolet repositories are declared as dependencies so a deployment can replace the lightweight fetch/rewrite adapter with the matching runtime integration for its chosen versions.
-
-Only HTTP and HTTPS destinations are accepted. Use this project only for sites and networks you are authorized to access; it does not guarantee access to content blocked by an administrator, provider, or applicable law.
+The HTTP fallback uses Node `fetch` so the project remains runnable while the version-specific runtime APIs are wired in. Proxying is restricted to HTTP(S) URLs and should only be used for destinations you are authorized to access. The selected proxy and transport are passed through the proxy URL and response headers.
